@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -v ':0$')",
+      "Bash(ls /Users/caviswanathan/Desktop/untitled folder/virtualauditor-hostinger-v4/*.html)",
+      "Bash(echo \"exit: $?\")",
+      "WebFetch(domain:search.google.com)",
+      "Bash(head -10 echo --- grep -o \"formspree\\\\|contact.*api\\\\|submit.*form\" '/Users/caviswanathan/Desktop/untitled folder/virtualauditor-hostinger-v4/assets/index-BKPeGC_C.js')",
+      "Bash(grep -o https://[^\"\"''\\\\]* '/Users/caviswanathan/Desktop/untitled folder/virtualauditor-hostinger-v4/assets/contact-Dj3Oudis.js')",
+      "Bash(grep -o http[s]*://[^\"\"]* '/Users/caviswanathan/Desktop/untitled folder/virtualauditor-hostinger-v4/assets/contact-Dj3Oudis.js')",
+      "WebFetch(domain:pagespeed.web.dev)",
+      "Bash(xargs -I{} echo \"{} HTML files\")"
+    ]
+  }
+}

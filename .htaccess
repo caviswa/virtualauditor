@@ -1,0 +1,78 @@
+ErrorDocument 404 /404.html
+ErrorDocument 500 /404.html
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Force HTTPS
+  RewriteCond %{HTTPS} off
+  RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+  # Remove www
+  RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+  RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
+
+  # Remove trailing slash (except root) — fixes 500 errors
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_URI} (.+)/$
+  RewriteRule ^ %1 [R=301,L]
+
+  # Canonical redirects for legal pages (handle common URL variations)
+  RewriteRule ^privacy-policy$ /privacypolicy [R=301,L]
+  RewriteRule ^terms-conditions$ /termsconditions [R=301,L]
+  RewriteRule ^terms-and-conditions$ /termsconditions [R=301,L]
+
+  # Serve existing files/directories as-is
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # Append .html if the file exists (clean URLs)
+  RewriteCond %{REQUEST_FILENAME}.html -f
+  RewriteRule ^(.*)$ $1.html [L]
+
+  # Fallback to index.html for SPA routing
+  RewriteRule ^ index.html [L]
+</IfModule>
+
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json image/svg+xml
+</IfModule>
+
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/html "access plus 1 hour"
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+  ExpiresByType application/json "access plus 1 day"
+</IfModule>
+
+<IfModule mod_headers.c>
+  # Versioned assets: 1 year + immutable (overrides Hostinger defaults)
+  <FilesMatch "\.(js|css|woff2|woff|ttf|eot)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  <FilesMatch "\.(webp|png|jpg|jpeg|svg|gif|ico)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  <FilesMatch "\.html$">
+    Header set Cache-Control "public, max-age=3600, must-revalidate"
+  </FilesMatch>
+  <FilesMatch "\.json$">
+    Header set Cache-Control "public, max-age=86400, must-revalidate"
+  </FilesMatch>
+
+  Header set X-Content-Type-Options "nosniff"
+  Header set X-Frame-Options "SAMEORIGIN"
+  Header set X-XSS-Protection "1; mode=block"
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+  Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+  Header set Cross-Origin-Opener-Policy "same-origin"
+  Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.googleapis.com https://*.gstatic.com https://*.googletagmanager.com https://*.google-analytics.com https://*.google.com https://wa.me; style-src 'self' 'unsafe-inline' https://*.googleapis.com; font-src 'self' https://*.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.google-analytics.com https://*.googleapis.com https://formspree.io https://virtualauditor.co.in; frame-src 'self' https://*.youtube.com https://*.youtube-nocookie.com https://*.google.com https://*.googleapis.com"
+  Header set Permissions-Policy "camera=(), microphone=(), geolocation=(self), payment=()"
+</IfModule>
